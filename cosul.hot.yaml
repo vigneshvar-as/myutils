@@ -1,0 +1,89 @@
+heat_template_version: 2013-05-23
+
+description: >
+  HOT template to test consul
+
+parameters:
+  image:
+    type: string
+    description: Name of image to use for servers
+    default: Centos7-image
+  size:
+    type: string
+    description: Flavor to use
+    default: m1.tiny
+  total:
+    type: string
+    description: number of agents
+    default: 1
+  consul:
+    type: string
+    description: consul download url
+    default: http://15.1.0.10/repo/consul
+  token:
+    type: string
+    description: consul token
+  jsawk:
+    type: string
+    description: jsawk download url
+    default: http://15.1.0.10/repo/jsawk
+  bootstrap:
+    type: string
+    description: consul bootstrap.sh download url
+    default: http://15.1.0.10/repo/bootstrap.sh
+
+resources:
+
+  consul_master:
+    type: OS::Nova::Server
+    properties:
+      name: server
+      image: { get_param: image }
+      flavor: { get_param: size }
+      user_data:
+        str_replace:
+          template: |
+              #!/bin/bash
+              echo "server" > /var/run/role
+              curl "$bootstrap" -o /tmp/bootstrap.sh
+              sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
+          params:
+            $consul:
+              get_param: consul
+            $token:
+              get_param: token
+            $jsawk:
+              get_param: jsawk
+            $bootstrap:
+              get_param: bootstrap
+      
+
+  consul_agents:
+    type: OS::Heat::ResourceGroup
+    depends_on: [consul_master]
+    properties:
+       count: { get_param: total}
+       resource_def:
+          type: OS::Nova::Server
+          properties:
+            name: agent%index%
+            image: { get_param: image }
+            flavor: { get_param: size }
+            metadata: {"consul_master":{ get_attr: [consul_master, first_address] } }
+            user_data:
+              str_replace:
+                template: |
+                    #!/bin/bash
+                    echo "agent" > /var/run/role
+                    curl "$bootstrap" -o /tmp/bootstrap.sh
+                    sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
+                params:
+                  $consul:
+                    get_param: consul
+                  $token:
+                    get_param: token
+                  $jsawk:
+                    get_param: jsawk
+                  $bootstrap:
+                    get_param: bootstrap
+

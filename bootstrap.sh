@@ -3,7 +3,7 @@
 CONSULURL=$1
 TOKEN=$2
 JSAWK_URL=$3
-CONSUL_DIR=/tmp/consul/
+CONSUL_DIR=/opt/consul/
 RUNONCE=/usr/bin/runonce
 
 mkdir -p  $CONSUL_DIR
