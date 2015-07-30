@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]
+then
+        echo "Pass parameter"
+        exit
+fi
+cmd="$*"
+
+process=`ps aux | grep -w "$cmd" | grep -v "grep" | grep -v "runonce" | wc -l`
+if [ $process -eq 0 ]
+then
+        echo "Excuting cmd"
+        $cmd
+fi
+
