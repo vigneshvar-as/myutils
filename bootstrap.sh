@@ -2,6 +2,7 @@
 
 CONSULURL=$1
 TOKEN=$2
+JSAWK_URL=$3
 CONSUL_DIR=/tmp/consul/
 RUNONCE=/usr/bin/runonce
 
@@ -10,6 +11,9 @@ mkdir -p  $CONSUL_DIR/data
 
 curl $CONSULURL -o $CONSUL_DIR/consul
 chmod 777 $CONSUL_DIR/consul
+
+curl $JSAWK_URL -o /usr/bin/jsawk
+chmod 777 /usr/bin/jsawk
 
 IP=`ip addr | grep inet | grep -v "::" | grep -v "127.0.0.1" | awk {'print $2'} | cut -d"/" -f 1`
 if [ "$IP" == "" ]
@@ -51,10 +55,26 @@ then
 	then
 		#./consul agent -server -data-dir data/ -bind 15.1.0.8 -bootstrap-expect 1
                 echo "* * * * * $RUNONCE $CONSUL_DIR/consul agent -server -bootstrap-expect 1 -data-dir $CONSUL_DIR/data -config-file /etc/enc.json  -bind $IP >> /var/log/consul.log 2>&1 &" > /tmp/cmd
-	
+		crontab < /tmp/cmd
 	else
                 echo "* * * * * $RUNONCE $CONSUL_DIR/consul agent -data-dir $CONSUL_DIR/data -config-file /etc/enc.json  -bind $IP >> /var/log/consul.log 2>&1 &" > /tmp/cmd
+		masterip=`curl http://169.254.169.254/openstack/2013-10-17/meta_data.json  | jsawk 'return this.meta.consul_master'`
+		crontab < /tmp/cmd
+		join=1
+		count=1
+		sleep 10
+		while [ $join -eq 1 ]
+		do
+			join=`$CONSUL_DIR/consul join $masterip | grep  "connection refused" | wc -l`
+			count=`expr $count + 1`
+			sleep 1
+			if [ $count -eq 300 ]
+			then
+				echo "master join failed"
+				exit
+			fi
+		done
 	fi
-	crontab < /tmp/cmd
+#	crontab < /tmp/cmd
 fi
 
