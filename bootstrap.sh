@@ -14,6 +14,7 @@ chmod 777 $CONSUL_DIR/consul
 
 curl $JSAWK_URL -o /usr/bin/jsawk
 chmod 777 /usr/bin/jsawk
+yum install js-devel
 
 IP=`ip addr | grep inet | grep -v "::" | grep -v "127.0.0.1" | awk {'print $2'} | cut -d"/" -f 1`
 if [ "$IP" == "" ]
