@@ -45,7 +45,7 @@ resources:
           template: |
               #!/bin/bash
               echo "server" > /var/run/role
-              yum --enablerepo=Appstack clean metadata
+              yum --enablerepo=Centos clean metadata
               curl "$bootstrap" -o /tmp/bootstrap.sh
               sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
           params:
@@ -76,7 +76,7 @@ resources:
                 template: |
                     #!/bin/bash
                     echo "agent" > /var/run/role
-                    yum --enablerepo=Appstack clean metadata
+                    yum --enablerepo=Centos clean metadata
                     curl "$bootstrap" -o /tmp/bootstrap.sh
                     sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
                 params:
