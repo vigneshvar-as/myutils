@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CONSULURL=$1
-TOKENURL=$2
+TOKEN=$2
 CONSUL_DIR=/tmp/consul/
 RUNONCE=/usr/bin/runonce
 
@@ -18,7 +18,7 @@ then
 	exit
 fi
 
-TOKEN=`curl $TOKENURL`
+#TOKEN=`curl $TOKENURL`
 echo "{\"encrypt\": \"$TOKEN\"}" > /etc/enc.json
 
 cat << EOF > $RUNONCE
