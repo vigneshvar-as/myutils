@@ -65,6 +65,20 @@ then
         fi
 fi
 
+sleep 20
+added=`curl http://localhost:8500/v1/kv/cassandra/seed?raw | grep "$IP" | wc -l`
+if [ $added -eq 0 ]
+then
+        tmp=`curl http://localhost:8500/v1/kv/cassandra/seed?raw`
+        if [ "$tmp" == "" ]
+        then
+                curl -X PUT -d "$IP" http://localhost:8500/v1/kv/cassandra/seed?raw
+        else
+                curl -X PUT -d "$tmp,$IP" http://localhost:8500/v1/kv/cassandra/seed?raw
+        fi
+fi
+
+
 
 
 
