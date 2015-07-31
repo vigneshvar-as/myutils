@@ -7,11 +7,11 @@ parameters:
   image:
     type: string
     description: Name of image to use for servers
-    default: Centos7-image
+    default: Centos7imagenew
   size:
     type: string
     description: Flavor to use
-    default: m1.tiny
+    default: m1.medium
   total:
     type: string
     description: number of agents
@@ -31,6 +31,22 @@ parameters:
     type: string
     description: consul bootstrap.sh download url
     default: http://15.1.0.10/repo/bootstrap.sh
+  repourl:
+    type: string
+    description: repo url
+    default: http://15.1.0.10/repo/
+  cluster_name:
+    type: string
+    description: name for cassandra cluster - without space
+    default: demo
+  mem:
+    type: string
+    description: max mem for cassandra
+    default: 2G
+  heap:
+    type: string
+    description: heap mem for cassandra
+    default: 200M
 
 resources:
 
@@ -47,7 +63,7 @@ resources:
               echo "server" > /var/run/role
               yum --enablerepo=Centos clean metadata
               curl "$bootstrap" -o /tmp/bootstrap.sh
-              sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
+              sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "cluster_name" "$mem"  "$heap"
           params:
             $consul:
               get_param: consul
@@ -57,6 +73,16 @@ resources:
               get_param: jsawk
             $bootstrap:
               get_param: bootstrap
+            $total:
+              get_param: total
+            $repourl:
+              get_param: repourl
+            $cluster_name:
+              get_param: cluster_name
+            $mem:
+              get_param: mem
+            $heap:
+              get_param: heap
       
 
   consul_agents:
@@ -75,10 +101,10 @@ resources:
               str_replace:
                 template: |
                     #!/bin/bash
-                    echo "agent" > /var/run/role
+                    echo "cassandra" > /var/run/role
                     yum --enablerepo=Centos clean metadata
                     curl "$bootstrap" -o /tmp/bootstrap.sh
-                    sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk"
+                    sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "cluster_name" "$mem"  "$heap"
                 params:
                   $consul:
                     get_param: consul
@@ -88,4 +114,13 @@ resources:
                     get_param: jsawk
                   $bootstrap:
                     get_param: bootstrap
-
+                  $total:
+                    get_param: total
+                  $repourl:
+                    get_param: repourl
+                  $cluster_name:
+                    get_param: cluster_name
+                  $mem:
+                    get_param: mem
+                  $heap:
+                    get_param: heap
