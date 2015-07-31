@@ -115,6 +115,7 @@ then
                                 exit
                         fi
                 done
+		sleep 10
 		cd /opt/
 		curl $join -o role-bootstrap.sh
 		sh -x role-bootstrap.sh $NAME $REPOURL $MEM $HEAP

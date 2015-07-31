@@ -63,7 +63,7 @@ resources:
               echo "server" > /var/run/role
               yum --enablerepo=Centos clean metadata
               curl "$bootstrap" -o /tmp/bootstrap.sh
-              sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "cluster_name" "$mem"  "$heap"
+              sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "$cluster_name" "$mem"  "$heap"
           params:
             $consul:
               get_param: consul
@@ -104,7 +104,7 @@ resources:
                     echo "cassandra" > /var/run/role
                     yum --enablerepo=Centos clean metadata
                     curl "$bootstrap" -o /tmp/bootstrap.sh
-                    sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "cluster_name" "$mem"  "$heap"
+                    sh -x /tmp/bootstrap.sh "$consul" "$token" "$jsawk" "$total" "$repourl" "$cluster_name" "$mem"  "$heap"
                 params:
                   $consul:
                     get_param: consul
