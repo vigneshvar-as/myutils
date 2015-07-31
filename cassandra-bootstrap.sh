@@ -53,7 +53,7 @@ fi
 
 
 
-added=`curl http://localhost:8500/v1/kv/cassandra/seed?raw | grep "1P" | wc -l`
+added=`curl http://localhost:8500/v1/kv/cassandra/seed?raw | grep "$IP" | wc -l`
 if [ $added -eq 0 ]
 then
         tmp=`curl http://localhost:8500/v1/kv/cassandra/seed?raw`
